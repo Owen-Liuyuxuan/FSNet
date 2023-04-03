@@ -1,0 +1,24 @@
+default:
+  tags:
+    - test-server
+  image: yxliuramlab/cuda_jupyter_torch:102_191_0101
+
+stages:
+  - test
+
+
+unittest:
+  stage: test
+  script:
+    - pip3 install pytest
+    - pip3 install -r requirement.txt
+    - bash make.sh
+    - pytest
+
+linting_test:
+  stage: test
+  script:
+    - pip3 install flake8 mypy
+    - pip3 install -r requirement.txt
+    - mypy --install-types --non-interactive
+    - flake8

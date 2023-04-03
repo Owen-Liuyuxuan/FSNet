@@ -1,0 +1,16 @@
+[flake8]
+exclude = ./docs, ./demos, ./dockers, ./meta_data, ./workdirs, .ipynb_checkpoints, ops, mdeq.py, ./configs, ./tests, ./scripts/_path_init.py, convnext.py, vit.py
+docstring-convention = google
+per-file-ignores =
+  # D100 Missing docstring in public module
+  # D103 Missing docstring in public function
+  # F401 Module imported but unused
+  __init__.py: F401, F403
+  setup.py: D100
+  *.py: E501, E266, E127, E231, E124, E252, E225, E251, E211, E221, E128, F403, E302, W293, F541, E262, E261, E303, E265, E202, E701, F405
+  vision_base/utils/logger.py: E122, E231, E252, E501
+extend-ignore =
+    # D105 Missing docstring in magic method
+    D105,
+    # E203 whitespace before ':' (for compliance with black)
+    E203,
