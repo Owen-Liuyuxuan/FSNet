@@ -3,9 +3,10 @@ import torch.nn as nn
 from easydict import EasyDict
 from typing import Optional
 from vision_base.utils.builder import build
+from vision_base.networks.models.meta_archs.base_meta import BaseMetaArch
 from monodepth.networks.utils.monodepth_utils import transformation_from_parameters
 
-class MonoDepthMeta(nn.Module):
+class MonoDepthMeta(BaseMetaArch):
     """Some Information about MonoDepthMeta"""
     def __init__(self, depth_backbone_cfg:EasyDict,
                        pose_backbone_cfg:EasyDict,
@@ -63,7 +64,7 @@ class MonoDepthMeta(nn.Module):
         else:
             return self.forward_test(data, meta)
 
-class MonoDepthWPose(nn.Module):
+class MonoDepthWPose(BaseMetaArch):
     def __init__(self, depth_backbone_cfg:EasyDict,
                        head_cfg:EasyDict,
                        train_cfg:EasyDict,
@@ -147,7 +148,7 @@ class MonoDepthWPose(nn.Module):
         else:
             return self.forward_test(data, meta)
 
-class DistillWPoseMeta(nn.Module):
+class DistillWPoseMeta(BaseMetaArch):
     def __init__(self, teacher_net_cfg:EasyDict,
                        depth_backbone_cfg:EasyDict,
                        # photo_uncer_cfg:EasyDict,
