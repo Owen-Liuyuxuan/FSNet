@@ -27,6 +27,26 @@ class EmptyAug(object):
     def __call__(self, data):
         return data
 
+class ExtractData(object):
+    """ Extract Certain keys from data. Trimmed the output of different datasets to a unified minimum output.
+        extract_keys : List[str], list of keys to be extracted
+        mapped_keys  : Dict[str, str], a dictionary of keys mapping to new names
+
+        We requires that all keys are presented in the input. 
+    """
+    def __init__(self, extract_keys=[], mapped_keys={}):
+        self.extract_keys = extract_keys
+        self.mapped_keys = mapped_keys
+
+    def __call__(self, data):
+        output_data = dict()
+        for key in self.extract_keys:
+            output_data[key] = data[key]
+        
+        for key in self.mapped_keys:
+            output_data[self.mapped_keys[key]] = data[key]
+        return output_data
+
 class ConvertToFloat(object):
     """
     Converts image data type to float.
@@ -644,3 +664,17 @@ class PhotometricDistort(object):
         distortion_list.children = distortion
 
         return distortion_list(data)
+
+class Copy(object):
+    """
+    Copy the image to another key
+    """
+    def __init__(self, from_keys, to_keys, **kwargs):
+        self.from_keys = from_keys
+        self.to_keys = to_keys
+
+    def __call__(self, data):
+        for from_key, to_key in zip(self.from_keys, self.to_keys):
+            data[to_key] = data[from_key].copy()
+
+        return data

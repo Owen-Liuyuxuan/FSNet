@@ -13,7 +13,7 @@ from vision_base.utils.utils import cfg_from_file
 from vision_base.networks.utils.utils import load_models
 
 def main(config:str="config/config.py",
-         checkpoint_path:str="retinanet_79.pth",
+         checkpoint_path:str="monodepth.pth",
          onnx_file='metaarch.onnx',
          input_names=['input'],
          output_names=['output'],

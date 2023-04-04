@@ -18,7 +18,7 @@ def datestring_from_wall_time(walltime):
     return iso
         
 
-def try_login_once(username, password, IP="nas.ram-lab.com", port="5000"):
+def try_login_once(username, password, IP="nas.yourwebsite.com", port="5000"):
     try:
         fl = filestation.FileStation(IP, port, username, password,
                                     secure=False, cert_verify=False, dsm_version=7,
@@ -109,7 +109,7 @@ def main(config_path, experiment_name='default'):
     result = login()
     fl = result['fl']
     username = result['username']
-    base_dir = f"/ramlab_data/{username}/monodepth"
+    base_dir = f"/data/{username}/monodepth"
     filename = config_path.split("/")[-1]
     this_folder = f"{filename}_{experiment_name}_{iso_time_string}"
     test_dir_path = os.path.join(base_dir, this_folder)

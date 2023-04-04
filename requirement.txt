@@ -3,6 +3,3 @@ easydict
 numpy==1.19
 tensorboard
 opencv-python==4.1.2.30
-kornia
-timm
-einops
