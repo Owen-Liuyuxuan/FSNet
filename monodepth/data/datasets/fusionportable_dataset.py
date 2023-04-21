@@ -1,7 +1,6 @@
 from __future__ import print_function, division
 import os
 import numpy as np
-import cv2
 from typing import List
 from easydict import EasyDict
 import yaml
@@ -14,7 +13,7 @@ from torch.utils.data import Dataset, DataLoader # noqa: F401
 
 import torch
 import torch.utils.data
-from monodepth.data.datasets.utils import read_image, read_depth, cam_relative_pose_nusc
+from monodepth.data.datasets.utils import read_image, cam_relative_pose_nusc
 from vision_base.utils.builder import build
 
 def opencv_matrix(loader, node):
@@ -22,6 +21,8 @@ def opencv_matrix(loader, node):
     mat = np.array(mapping["data"])
     mat.resize(mapping["rows"], mapping["cols"])
     return mat
+
+
 yaml.add_constructor(u"tag:yaml.org,2002:opencv-matrix", opencv_matrix)
     
 def read_opencv_yaml(file_path):
@@ -183,6 +184,5 @@ class FusionportableMonoDataset(torch.utils.data.Dataset):
 
 
     def get_pose(self, frame_indexes:List[int], *args, **kwargs):
-        poses = self.meta_dict['poses']['T_list'][frame_indexes, :, :] 
+        poses = self.meta_dict['poses']['T_list'][frame_indexes, :, :]
         return poses
-

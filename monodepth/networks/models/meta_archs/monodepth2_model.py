@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from easydict import EasyDict
 from typing import Optional
 from vision_base.utils.builder import build
@@ -116,7 +115,7 @@ class MonoDepthWPose(BaseMetaArch):
                 # Invert the matrix if the frame id is negative
                 T = torch.matmul(
                     data[('relative_pose', f_i)], transformation_from_parameters(
-                    axisangle[:, 0], translation[:, 0], invert=(f_i < 0))
+                        axisangle[:, 0], translation[:, 0], invert=(f_i < 0))
                 ) #[B, 4, 4]
                 ratio = torch.norm(T[:, :3, 3]) / torch.norm(data[('relative_pose', f_i)][:, :3, 3]) #[B, ]
                 scale = torch.ones(T.shape[0], 4, 4).cuda()

@@ -32,7 +32,7 @@ class ExtractData(object):
         extract_keys : List[str], list of keys to be extracted
         mapped_keys  : Dict[str, str], a dictionary of keys mapping to new names
 
-        We requires that all keys are presented in the input. 
+        We requires that all keys are presented in the input.
     """
     def __init__(self, extract_keys=[], mapped_keys={}):
         self.extract_keys = extract_keys

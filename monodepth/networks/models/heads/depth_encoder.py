@@ -192,4 +192,3 @@ class MultiChannelDepthDecoderUncertain(DepthDecoder):
         #outputs[('dI0', 0)] = torch.exp(uncertainty_i)
 
         return outputs
-

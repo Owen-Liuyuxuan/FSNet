@@ -30,5 +30,3 @@ class MonoDepthInference(nn.Module):
                 teacher_output[new_key] = output_dict[key]
         
         return teacher_output
-
-

@@ -379,16 +379,8 @@ class FishEyeDecoder(MonoDepth2Decoder):
                 homo_points = torch.cat([points, torch.ones_like(points[..., :1])], dim=-1).squeeze(1)[..., None] #[B, H, W, 4, 1]
                 T_reshaped = T[:, None, None] #[2, 1, 1, 4, 4]
                 transformed_points = torch.matmul(T_reshaped, homo_points)[..., 0] # [B, H, W, 4]
-                Z = torch.clip(transformed_points[..., 3:4], min=-2)
-                z_larger_zero_mask = Z > 0 #[B, H, W, 1]
-                masked_Z = torch.where(
-                    z_larger_zero_mask,
-                    Z,
-                    Z.detach()
-                )
-                cam_points = torch.cat([transformed_points[..., 0:2], masked_Z], dim=-1)
                 pix_coords = torch.stack([
-                    self.mei_projection.cam2image(cam_points[b], P[b], calib_meta[b]) for b in range(batch)
+                    self.mei_projection.cam2image(transformed_points[b, ..., 0:3], P[b], calib_meta[b]) for b in range(batch)
                 ], dim=0)[..., 0:2] #[b, H, W, 2]
                 normalized_pix = torch.stack(
                     [pix_coords[..., 0] / max(width - 1, 1) * 2 - 1, pix_coords[..., 1] / max(height - 1, 1) * 2 - 1], dim=-1
@@ -419,4 +411,10 @@ class FishEyeDecoder(MonoDepth2Decoder):
                         patched_mask.unsqueeze(1).float(),
                         normalized_pix, align_corners=True, mode='nearest') #[B, 1, H, W]
                     outputs[("overlapped_mask", frame_id, scale)] = (reproject_patch == 1).squeeze(1) #[B, H, W]
-
+    
+    def get_prediction(self, input_dict, output_dict):
+        norm = output_dict[("depth", 0, 0)]
+        P = input_dict["P2"]
+        calib_meta = input_dict["calib_meta"]
+        points, mask = self.mei_projection.image2cam(norm, P, calib_meta)
+        return dict(depth= points[..., 2], norm=norm)

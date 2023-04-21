@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 from easydict import EasyDict
-from typing import Optional, Dict
+from typing import Optional
 import torch
 import torch.nn as nn
 from torch.utils.data.dataset import Dataset # noqa: F401
@@ -55,7 +55,7 @@ class KittiEvaluationHook(BaseEvaluationHook):
                 h_eff, w_eff = batched_data[('image_resize', 'effective_size')][i]
                 depth = depth[0:h_eff, 0:w_eff]
                 h, w, _ = batched_data[('original_image', 0)][i].shape
-                depth_0 = 1 / cv2.resize( 1 / depth.cpu().numpy(), (w, h))
+                depth_0 = 1 / cv2.resize(1 / depth.cpu().numpy(), (w, h))
 
                 return_dict = self.dataset_eval_func.single_call(depth_0, frame_index)
                 frame_index += 1
@@ -75,7 +75,6 @@ class KittiEvaluationHook_postopt(KittiEvaluationHook):
                        epoch_num:int=0
                        ):
         meta_arch.eval()
-        self.result_write_hook.rebuild_result_dir()
         post_opt_cfg = getattr(self, 'post_opt_cfg', dict())
         print(post_opt_cfg)
         vo_path = getattr(post_opt_cfg, 'vo_path', None)
@@ -128,7 +127,7 @@ class KittiEvaluationHook_postopt(KittiEvaluationHook):
 
                 
                 h, w, _ = batched_data[('original_image', 0)][i].shape
-                depth_0 = 1 / cv2.resize( 1 / depth.cpu().numpy(), (w, h))
+                depth_0 = 1 / cv2.resize(1 / depth.cpu().numpy(), (w, h))
 
                 return_dict = self.dataset_eval_func.single_call(depth_0, frame_index)
                 frame_index += 1
@@ -179,7 +178,7 @@ class FastNuscEvaluationHook(BaseEvaluationHook):
                 if camera_type not in errors:
                     errors[camera_type] = []
                     abs_errors[camera_type] = []
-                if  self.dataset_eval_func is not None:
+                if self.dataset_eval_func is not None:
                     filename = batched_data[('filename', 0)][i]
                     try:
                         return_dict = self.dataset_eval_func.single_call(depth_0, filename)
@@ -265,7 +264,7 @@ class PostOptFastNuscEvaluationHook(FastNuscEvaluationHook):
                 if camera_type not in errors:
                     errors[camera_type] = []
                     abs_errors[camera_type] = []
-                if  self.dataset_eval_func is not None:
+                if self.dataset_eval_func is not None:
                     filename = batched_data[('filename', 0)][i]
                     try:
                         return_dict = self.dataset_eval_func.single_call(depth_0, filename)
@@ -287,6 +286,3 @@ class PostOptFastNuscEvaluationHook(FastNuscEvaluationHook):
         all_mean_errors = np.array(all_mean_errors).mean(0)
         all_mean_errors_abs = np.array(all_mean_errors_abs).mean(0)
         self.dataset_eval_func.log(writer, 'all mean', all_mean_errors, all_mean_errors_abs, global_step=global_step, epoch_num=epoch_num)
-
-
-

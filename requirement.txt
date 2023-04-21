@@ -1,5 +1,13 @@
 torch
 easydict
-numpy==1.19
+numpy
 tensorboard
-opencv-python==4.1.2.30
+opencv-python
+coloredlogs
+scipy
+nuscenes-devkit
+pillow<7.4.0
+fire
+tqdm
+numba
+scikit-image

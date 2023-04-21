@@ -43,4 +43,3 @@ class PoseDecoder(nn.Module):
         translation = out[..., 3:]
 
         return axisangle, translation
-

@@ -3,7 +3,7 @@
 """
 import fire
 import torch
-import onnx 
+import onnx
 import onnxruntime as ort
 
 
@@ -68,6 +68,7 @@ def main(config:str="config/config.py",
     ort_session = ort.InferenceSession(onnx_file, providers=[('CUDAExecutionProvider', {'device_id':gpu})],)
     outputs = ort_session.run(None, {'input': dummy_input.cpu().numpy()})
     print(f"The actual output of onnxruntime session: outputs[0].shape={outputs[0].shape}")
+
 
 if __name__ == '__main__':
     fire.Fire(main)

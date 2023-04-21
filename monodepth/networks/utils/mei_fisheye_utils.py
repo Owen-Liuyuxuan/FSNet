@@ -1,13 +1,13 @@
 import torch
-import torch.nn as nn
 import numpy as np
+from numba import jit
 
 """
     Mei unified camera model is presented at:
     https://www.robots.ox.ac.uk/~cmei/articles/single_viewpoint_calib_mei_07.pdf
 
     1. Project the points in the camera frame into a unit sphere.  X = X / norm
-    2. Project the point onto a new normalized plane define by the mirror parameters. X = X / (Z + xi); Y = Y / (Z + xi) 
+    2. Project the point onto a new normalized plane define by the mirror parameters. X = X / (Z + xi); Y = Y / (Z + xi)
     3. Apply the distortion model to the normalized plane. X = X * (1 + k1 * ro2 + k2 * ro2 * ro2); Y = Y * (1 + k1 * ro2 + k2 * ro2 * ro2)
     4. Project the point onto the image plane. X = gamma1 * X + u0; Y = gamma2 * Y + v0
 """
@@ -50,6 +50,7 @@ def _cam2image(points, P, calib):
 
     return x, y, norm * points[..., 2] / (abs_func(points[..., 2]) + eps)
 
+
 """
     Reproject image plane to camera coordinate based on the Mei camera model.
 
@@ -59,10 +60,8 @@ def _cam2image(points, P, calib):
     1. retrieve points from the image plane to the normalized plane: X = (x - u0) / gamma1; Y = (y - v0) / gamma2
     2. Backtracking the radial distortion model, we have an forward equation r1 = r0(1 + k1 * r0^2 + k2 * r0^4) and a backward equation r0 = r1 / (1 + k1 * r1^2 + k2 * r1^4). We can use the Newton method to solve the equation. Then we backtrack the normalized plane coordinates: X = X * r0 / r1; Y = Y * r0 / r1. We will cache the result in an image because it is a constant value for each pixel.
     3. Backtracking the mirror parameters, we have a forward equation r0^2 = (1 - Z^2) / (xi + Z)^2. This function is monotonic decreasing given Z in [0, 1]. So we use bisection method to solve the equation. We will cache the result in an image because it is a constant value for each pixel.
-    4. Backtracking the camera coordintate. Given we have z from network prediction. norm = Z / z. We can compute the camera coordinate by X3d = X * norm; Y3d = Y * norm; 
+    4. Backtracking the camera coordintate. Given we have z from network prediction. norm = Z / z. We can compute the camera coordinate by X3d = X * norm; Y3d = Y * norm;
 """
-from functools import lru_cache
-from numba import jit
 
 @jit(nopython=True, cache=True)
 def radial_distort_func(k1, k2, r1, r0):
@@ -135,7 +134,7 @@ class MeiCameraProjection(object):
 
     def cam2image(self, points, P, calib):
         x, y, z = _cam2image(points, P, calib)
-        return torch.stack([x, y, z], dim=-1) 
+        return torch.stack([x, y, z], dim=-1)
 
     def image2cam(self, norm, P, calib):
         B, _ ,H, W = norm.shape
@@ -186,5 +185,3 @@ class MeiCameraProjection(object):
         x = X * norm
         y = Y * norm
         return torch.stack([x, y, z], dim=-1), mask_tensor
-        
-

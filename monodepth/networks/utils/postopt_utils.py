@@ -1,10 +1,8 @@
 import os
-import math
 import numpy as np
 import cv2
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from monodepth.data.datasets.kitti360_dataset import KITTI360MonoDataset
 
 def denorm(image, rgb_mean, rgb_std):
@@ -39,7 +37,6 @@ def read_sparse_vo(dataset, index, output_h, output_w, vo_folder=None):
     else:
         folder = instance['folder']
         frameindex = instance['index']
-        date = instance['datetime']
         sequence = folder.split('/')[1]
         vo_folder = '/data/kitti_depth_sfm/sfm_depth_png' if vo_folder is None else vo_folder
         image_path = os.path.join(
@@ -215,7 +212,6 @@ def post_optimization(
     weights = torch.exp(-center_diff/20)
     sum_weights = torch.sum(weights, dim=-1)
 
-    N = len(segments)
     lambda1_array = lambda1 * lambda1_mask
     A = torch.diag(sum_weights * lambda0 + lambda1_array + lambda2) - lambda0  * weights
     B = lambda2 * base_scales + lambda1_array * target_scales + lambda0 * torch.sum(roki * weights, dim=-1)

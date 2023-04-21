@@ -149,7 +149,7 @@ class KittiDepthMonoDataset(torch.utils.data.Dataset):
             self.flow_path = getattr(data_cfg, 'flow_path', "")
         self.is_filter_static = getattr(data_cfg, 'is_filter_static', True)
         if self.is_filter_static:
-            self.imdb = self._filter_static_indexes()
+            self.imdb = manager.list(self._filter_static_indexes())
         self.transform = build(**data_cfg.augmentation)
 
         # read pose for each sequence:
@@ -235,7 +235,7 @@ class KittiDepthMonoDataset(torch.utils.data.Dataset):
         return read_depth(image_dir)
 
     def get_pose(self, folder, frame_indexes:List[int], *args, **kwargs):
-        poses = self.pose_dict[folder][frame_indexes, :, :] 
+        poses = self.pose_dict[folder][frame_indexes, :, :]
         return poses
 
     def get_motion_mask(self, i):

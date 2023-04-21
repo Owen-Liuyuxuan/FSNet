@@ -1,7 +1,5 @@
 import numpy as np
 import os
-import cv2
-from PIL import Image
 import tqdm
 
 from monodepth.data.datasets.fusionportable_dataset import read_ouster_calib, read_pcd_file, read_camera_calib
@@ -14,7 +12,6 @@ class FusionPortableEvaluator(KittiEigenEvaluator):
         self.cam00_calib  = read_camera_calib(os.path.join(calib_dir, 'frame_cam00.yaml'))
 
     def _precompute(self, data_path, split_file, gt_saved_file):
-        img_dir   = os.path.join(data_path, 'frame_cam00', 'image', 'data')
         calib_dir = os.path.join(data_path, 'calib')
         pc_dir    = os.path.join(data_path, 'ouster00', 'point', 'data')
 

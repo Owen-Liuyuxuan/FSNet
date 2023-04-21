@@ -2,12 +2,10 @@ from __future__ import print_function, division
 import os
 import numpy as np
 import cv2
-from typing import List
 from easydict import EasyDict
 import yaml
 
 from copy import deepcopy
-from multiprocessing import Manager
 from torch.utils.data import Dataset, DataLoader # noqa: F401
 
 import torch
@@ -160,7 +158,11 @@ class KITTI360FisheyeDataset(torch.utils.data.Dataset):
 
         self.use_right_image = getattr(data_cfg, 'use_right_image', True)
 
-        self.fish_eye_mask = cv2.imread('/home/yxliu/multi_cam/monodepth/meta_data/kitti360_trainsub/fisheye_mask.png', -1)
+        fish_eye_mask = getattr(data_cfg, 'fisheye_mask', None)
+        if fish_eye_mask is not None:
+            self.fish_eye_mask = cv2.imread('/home/monodepth/meta_data/kitti360_trainsub/fisheye_mask.png', -1)
+        else:
+            self.fish_eye_mask = None
 
         self.transform = build(**data_cfg.augmentation)
     
@@ -252,8 +254,9 @@ class KITTI360FisheyeDataset(torch.utils.data.Dataset):
         data['calib_meta'] = deepcopy(calib_meta)
 
         h, w, _ = data[("image", 0)].shape
-        data["patched_mask"] = cv2.resize(self.fish_eye_mask, (w, h), interpolation=cv2.INTER_NEAREST)
+        if self.fish_eye_mask is not None:
+            data["patched_mask"] = cv2.resize(self.fish_eye_mask, (w, h), interpolation=cv2.INTER_NEAREST)
+        else:
+            data["patched_mask"] = np.ones([h, w])
         data = self.transform(deepcopy(data))
         return data
-
-
