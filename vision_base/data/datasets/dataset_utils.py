@@ -4,9 +4,19 @@ import numpy as np
 import torch
 from vision_base.utils.builder import build
 
+def find_shared_keys(batch):
+    lists_of_keys = [
+        list(item.keys()) for item in batch
+    ]
+    shared_keys = set(lists_of_keys[0])
+    for keylist in lists_of_keys[1:]:
+        shared_keys = shared_keys.intersection(set(keylist))
+    return list(shared_keys)
+
 def collate_fn(batch):
     collated_data = {}
-    for key in batch[0]:
+    shared_keys = find_shared_keys(batch)
+    for key in shared_keys:
         if isinstance(batch[0][key], torch.Tensor):
             collated_data[key] = torch.stack([item[key] for item in batch], dim=0)
         elif isinstance(batch[0][key], np.ndarray):

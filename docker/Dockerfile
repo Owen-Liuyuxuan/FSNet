@@ -1,11 +1,4 @@
-FROM nvidia/cuda:11.1-cudnn8-devel-ubuntu20.04
-
-RUN rm /etc/apt/sources.list.d/cuda.list
-RUN rm /etc/apt/sources.list.d/nvidia-ml.list
-RUN apt-key del 7fa2af80
-RUN apt-get update && apt-get install -y --no-install-recommends wget
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb
-RUN dpkg -i cuda-keyring_1.0-1_all.deb
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update --fix-missing --no-install-recommends && \
     DEBIAN_FRONTEND=noninteractive apt-get install python3.8 python3-pip nano libsm6 \
@@ -15,7 +8,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update --fix-missing --no-install-rec
 
 RUN pip3 install -U pip && \
     pip3 install future -U && \
-    pip3 install tensorboard matplotlib numpy pillow<7.4.0 \
+    pip3 install tensorboard matplotlib numpy pillow==7.2.0 \
     opencv-python scikit-image numba tqdm \
     cython fire easydict pyquaternion pytest
 
